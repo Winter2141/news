@@ -1,53 +1,82 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import { connect } from "react-redux";
+import {fetchArticle} from "../../actions/articleActions";
+import {withRouter} from "react-router-dom";
+import PropTypes from "prop-types";
+import ArticleList from "../article/ArticleList";
+import FilterBox from "../article/FilterBox";
+import InfiniteScroll from "react-infinite-scroll-component";
+import Loading from "../modal/Loading";
 
-class Landing extends Component {
-  render() {
+const Landing = ({
+                     fetchArticle,
+                     articles,
+                     loading,
+                     totalCount,
+                    auth
+                 }) => {
+
+    const [page, setPage] = useState(1);
+    const [searchData, setSearchData] = useState({
+        keyword: null,
+        source: null,
+        category: null,
+        country: null
+    })
+
+    useEffect(() => {
+        console.log(articles, 'articles')
+    }, [articles])
+
+
+    const fetchMore = () => {
+        setPage(page + 1);
+    }
+
+    const onChangeFilter = (filterData) => {
+        console.log('filterData', filterData);
+        setSearchData(filterData)
+    }
+
+    useEffect(() => {
+        fetchArticle({
+            ...searchData, page
+        });
+
+    }, [page, searchData])
+
     return (
-      <div style={{ height: "75vh" }} className="container valign-wrapper">
-        <div className="row">
-          <div className="col s12 center-align">
-            <h4>
-              <b>Build</b> a login/auth app with the{" "}
-              <span style={{ fontFamily: "monospace" }}>MERN</span> stack from
-              scratch
-            </h4>
-            <p className="flow-text grey-text text-darken-1">
-              Create a (minimal) full-stack app with user authentication via
-              passport and JWTs
-            </p>
-            <br />
-            <div className="col s6">
-              <Link
-                to="/register"
-                style={{
-                  width: "140px",
-                  borderRadius: "3px",
-                  letterSpacing: "1.5px"
-                }}
-                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-              >
-                Register
-              </Link>
-            </div>
-            <div className="col s6">
-              <Link
-                to="/login"
-                style={{
-                  width: "140px",
-                  borderRadius: "3px",
-                  letterSpacing: "1.5px"
-                }}
-                className="btn btn-large btn-flat waves-effect white black-text"
-              >
-                Log In
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+        <>
+            {
+                auth.isAuthenticated ? <FilterBox onChange={onChangeFilter}/> : null
+            }
+            {
+                !loading && articles !== undefined && articles !== null && articles.length > 0 ? (<InfiniteScroll next={fetchMore} hasMore={totalCount !== articles.length} loader={<div> </div>} dataLength={articles.length}>
+                    <ArticleList articles={articles} category="Articles" loading={loading}/>
+                </InfiniteScroll>) : (<Loading/>)
+            }
+
+        </>
+    )
 }
 
-export default Landing;
+
+Landing.propTypes = {
+    fetchArticle: PropTypes.func.isRequired,
+    articles: PropTypes.object.isRequired,
+    loading: PropTypes.bool.isRequired,
+    totalCount: PropTypes.number.isRequired,
+    auth: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+    articles: state.article.articles,
+    loading: state.article.loading,
+    totalCount: state.article.totalCount,
+    auth: state.auth
+});
+
+export default connect(
+    mapStateToProps,
+    { fetchArticle }
+)(withRouter(Landing));

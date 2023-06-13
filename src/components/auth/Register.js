@@ -20,7 +20,7 @@ class Register extends Component {
   componentDidMount() {
     // If logged in and user navigates to Register page, should redirect them to dashboard
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
+      this.props.history.push("/");
     }
   }
 
@@ -38,6 +38,9 @@ class Register extends Component {
 
   onSubmit = e => {
     e.preventDefault();
+    if(this.state.password !== this.state.password2) {
+      return false;
+    }
 
     const newUser = {
       name: this.state.name,
