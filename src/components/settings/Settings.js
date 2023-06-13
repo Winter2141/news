@@ -27,14 +27,32 @@ const Settings = ({
         return data.split(",");
     }
     const { user, settings } = auth;
-    const { countries, sources, categories } = article;
-    const [country, setCountry] = useState(settings.country);
-    const [source, setSource] = useState(convertData(settings.sources));
-    const [category, setCategory] = useState(convertData(settings.categories));
+    const [countries, setCountries] = useState(null);
+    const [sources, setSources] = useState(null);
+    const [categories, setCategories] = useState(null);
+    const [country, setCountry] = useState(null);
+    const [source, setSource] = useState(null);
+    const [category, setCategory] = useState(null);
 
     useEffect(() => {
-        fetchSources(country);
+        fetchSources(0, country ? country : 'us');
     }, [country]);
+
+    useEffect(() => {
+        if(article !== undefined && article !== null) {
+            setCountries(article.countries);
+            setSources(article.sources);
+            setCategories(article.categories);
+        }
+    }, [article])
+
+    useEffect(() => {
+        if(settings !== undefined && settings !== null) {
+            setCountry(settings.country);
+            setSource(convertData(settings.sources));
+            setCategory(convertData(settings.categories));
+        }
+    }, [settings])
 
     useEffect(() => {
         if(countries === undefined || countries === null || countries.length === 0) {
@@ -60,10 +78,6 @@ const Settings = ({
             setCategory(tempArray);
         }
     }
-
-    useEffect(() => {
-        console.log(category, 'category2', (category !== undefined && category.indexOf('general') !== -1))
-    }, [category])
 
     const checkSource = (e) => {
         const newVal = e.target.value;
@@ -150,9 +164,9 @@ const Settings = ({
                         <div className="input-field col flex">
                             {/*{ renderCheckBoxes(categories, category, null, null, checkCategory) }                            */}
                             {
-                                categories.map((item, index) =>
+                                categories !== undefined && categories !== null && categories.map((item, index) =>
                                     <div key={index} className="check-item">
-                                        <input name="check-country" type="checkbox" id={`checkItem_${item}`} value={item} onChange={(e) => checkCategory(e)} checked={ category !== undefined && category.indexOf(item) !== -1 }/>
+                                        <input name="check-category" type="checkbox" id={`checkItem_${item}`} value={item} onChange={(e) => checkCategory(e)} checked={ category !== undefined && category.indexOf(item) !== -1 }/>
                                         <label htmlFor={`checkItem_${item}`}>{item.toUpperCase()}</label>
                                     </div>
                                 )
@@ -162,7 +176,15 @@ const Settings = ({
                     <div className="section">
                         <h5>Sources</h5>
                         <div className="input-field col flex">
-                            { renderCheckBoxes(sources, source, 'id', 'name', checkSource) }
+                            {/*{ renderCheckBoxes(sources, source, 'id', 'name', checkSource) }*/}
+                            {
+                                sources !== undefined && sources !== null && sources.map((item, index) =>
+                                    <div key={index} className="check-item">
+                                        <input name="check-source" type="checkbox" id={`checkSources_${item.id}`} value={item.id} onChange={(e) => checkSource(e)} checked={ source !== undefined && source.indexOf(item.id) !== -1 }/>
+                                        <label htmlFor={`checkSources_${item.id}`}>{item.name.toUpperCase()}</label>
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
 

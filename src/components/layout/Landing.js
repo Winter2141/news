@@ -34,8 +34,8 @@ const Landing = ({
     }
 
     const onChangeFilter = (filterData) => {
-        console.log('filterData', filterData);
-        setSearchData(filterData)
+        setSearchData(filterData);
+        setPage(1);
     }
 
     useEffect(() => {
@@ -51,9 +51,14 @@ const Landing = ({
                 auth.isAuthenticated ? <FilterBox onChange={onChangeFilter}/> : null
             }
             {
-                !loading && articles !== undefined && articles !== null && articles.length > 0 ? (<InfiniteScroll next={fetchMore} hasMore={totalCount !== articles.length} loader={<div> </div>} dataLength={articles.length}>
-                    <ArticleList articles={articles} category="Articles" loading={loading}/>
-                </InfiniteScroll>) : (<Loading/>)
+                ((page === 1 && !loading) || (page !== 1)) && articles !== undefined && articles !== null && articles.length > 0 ? (
+                    <InfiniteScroll
+                        next={fetchMore}
+                        hasMore={totalCount !== articles.length}
+                        loader={<div> </div>}
+                        dataLength={articles.length}>
+                        <ArticleList articles={articles} category="Articles"/>
+                    </InfiniteScroll>) : (<Loading />)
             }
 
         </>

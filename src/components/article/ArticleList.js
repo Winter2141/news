@@ -5,9 +5,8 @@ import PropTypes from 'prop-types';
 import ArticleDetailModal from "../modal/ArticleDetailModal";
 import ArticleItem from "./ArticleItem";
 import "./Style.css"
-import Loading from "../modal/Loading";
 
-const ArticleList = ({ articles, category, loading }) => {
+const ArticleList = ({ articles, category }) => {
     const [modal, setModal] = useState(false);
     const [currentArticle, setCurrentArticle] = useState({});
 
@@ -47,13 +46,11 @@ const ArticleList = ({ articles, category, loading }) => {
 ArticleList.defaultProps = {
     articles: [],
     category: "",
-    loading: false
 };
 
 ArticleList.propTypes = {
     articles: PropTypes.object.isRequired,
     category: PropTypes.string.isRequired,
-    loading: PropTypes.bool.isRequired
 };
 
 export default ArticleList

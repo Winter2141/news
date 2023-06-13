@@ -21,7 +21,7 @@ export const fetchArticle = searchData => dispatch => {
         );
 };
 
-export const fetchCategories = (isOwn = false) => dispatch => {
+export const fetchCategories = (isOwn = 0) => dispatch => {
     axios
         .get(`${baseURL}/article/categories?is_own=${isOwn}`)
         .then(res => {
@@ -49,9 +49,9 @@ export const fetchCountries = () => dispatch => {
         );
 }
 
-export const fetchSources = (country = 'us') => dispatch => {
+export const fetchSources = (isOwn = 0, country = null) => dispatch => {
     axios
-        .get(`${baseURL}/article/sources?country=${country}`)
+        .get(`${baseURL}/article/sources?country=${country}&is_own=${isOwn}`)
         .then(res => {
             dispatch(setSources(res.data));
         })
